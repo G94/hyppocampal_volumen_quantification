@@ -97,5 +97,5 @@ def med_reshape(image, new_shape):
 
     # TASK: write your original image into the reshaped image
     # <CODE GOES HERE>
-
+    reshaped_image[0:image.shape[0], 0:image.shape[1], 0:image.shape[2]] = image
     return reshaped_image
