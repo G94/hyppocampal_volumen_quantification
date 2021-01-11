@@ -45,7 +45,7 @@ class UNetInferenceAgent:
         Runs inference on a single volume of conformant patch size
 
         Arguments:
-            volume {Numpy array} -- 3D array representing the volume
+            volume {Numpy array} -- 3D array representing the volumeout
 
         Returns:
             3D NumPy array with prediction mask
@@ -59,6 +59,21 @@ class UNetInferenceAgent:
         # that, put all slices into a 3D Numpy array. You can verify if your method is 
         # correct by running it on one of the volumes in your training set and comparing 
         # with the label in 3D Slicer.
-        # <YOUR CODE HERE>
+        patch_size = 64
+        volume =  med_reshape(volume, new_shape = [volume.shape[0],  patch_size, patch_size])
 
-        return # 
+        def inference(img):
+            tsr_test =  torch.from_numpy(img.astype(np.single)/np.max(img)).unsqueeze(0).unsqueeze(0)
+            pred = self.model(tsr_test.to(self.device))
+            return np.squeeze(pred.cpu().detach())
+        mask3d = np.zeros(volume.shape)
+        for slc_ix in range(volume.shape[0]):
+            pred = inference(volume[slc_ix, :, :])
+            mask3d[slc_ix, :, :] = torch.argmax(pred, dim = 0)
+        return mask3d
+
+
+if __name__ == "__main__":
+    inf_agent = UNetInferenceAgent(device = "cpu", parameter_file_path = r'section_out/out/model.pth')
+    pred_label = inf_agent.single_volume_inference_unpadded(np.array(volume))
+    pred_volumes = get_predicted_volumes(pred_label)

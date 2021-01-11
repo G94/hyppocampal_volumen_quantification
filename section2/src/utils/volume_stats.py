@@ -25,7 +25,15 @@ def Dice3d(a, b):
     # TASK: Write implementation of Dice3D. If you completed exercises in the lessons
     # you should already have it.
     # <YOUR CODE HERE>
-    pass
+    intersection =  np.sum(a*b)
+    volumes = np.sum(a) + np.sum(b)
+
+    if volumes == 0:
+        return -1
+
+    dice3d_score = 2.*float(intersection)/float(volumes)
+    return dice3d_score
+    
 
 def Jaccard3d(a, b):
     """
@@ -49,5 +57,39 @@ def Jaccard3d(a, b):
     # TASK: Write implementation of Jaccard similarity coefficient. Please do not use 
     # the Dice3D function from above to do the computation ;)
     # <YOUR CODE GOES HERE>
+    a = a.astype(bool)
+    b = b.astype(bool)
 
-    return #
+    jaccard_coef = np.double(np.bitwise_and(a,b).sum())/np.double(np.bitwise_or(a,b).sum())
+    return jaccard_coef
+
+def Sensivity(a, b):
+    """
+    This will compute the Jaccard Similarity coefficient for two 3-dimensional volumes
+    Volumes are expected to be of the same size. We are expecting binary masks - 
+    0's are treated as background and anything else is counted as data
+
+    Arguments:
+        a {Numpy array} -- 3D array with first volume
+        b {Numpy array} -- 3D array with second volume
+
+    Returns:
+        float
+    """
+    if len(a.shape) != 3 or len(b.shape) != 3:
+        raise Exception(f"Expecting 3 dimensional inputs, got {a.shape} and {b.shape}")
+
+    if a.shape != b.shape:
+        raise Exception(f"Expecting inputs of the same shape, got {a.shape} and {b.shape}")
+
+    # TASK: Write implementation of Jaccard similarity coefficient. Please do not use 
+    # the Dice3D function from above to do the computation ;)
+    # <YOUR CODE GOES HERE>
+    tp = np.sum(a[a == b])
+    fn = np.sum(a[a != b])
+    if (tp + fn) <=0:
+        return -1
+    
+    
+    return (tp)/(tp+fn)
+

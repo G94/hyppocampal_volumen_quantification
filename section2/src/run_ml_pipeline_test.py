@@ -8,7 +8,7 @@ from experiments.UNetExperiment import UNetExperiment
 from data_prep.HippocampusDatasetLoader import LoadHippocampusData
 from random import sample
 from sklearn.model_selection import train_test_split
-
+import torch
 class Config:
     """
     Holds configuration parameters
@@ -16,7 +16,7 @@ class Config:
     def __init__(self):
         self.name = "Basic_unet"
         self.root_dir = r"training_data"
-        self.n_epochs = 10
+        self.n_epochs = 2
         self.learning_rate = 0.0002
         self.batch_size = 8
         self.patch_size = 64
@@ -46,10 +46,6 @@ if __name__ == "__main__":
                                    test_size = 0.2)
 
 
-
-    #print("train_df", len(train_index))
-    #print("valid_df", len(valid_index))
-
     val_size = len(valid_index) * 0.5   
     test_index = sample(valid_index, int(val_size))
 
@@ -75,13 +71,14 @@ if __name__ == "__main__":
     
     # TASK: Class UNetExperiment has missing pieces. Go to the file and fill them in
     exp = UNetExperiment(c, split, data)
-
+    exp.model.load_state_dict(torch.load('section2/out/2021-01-11_0258_Basic_unet/model.pth'))
+    exp.model.eval()
     # You could free up memory by deleting the dataset
     # as it has been copied into loaders
     del data 
 
     # run training
-    exp.run()
+    # exp.run()
 
     # prep and run testing
 

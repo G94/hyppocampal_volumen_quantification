@@ -4,7 +4,7 @@ Module for Pytorch dataset representations
 
 import torch
 from torch.utils.data import Dataset
-
+import sys
 class SlicesDataset(Dataset):
     """
     This class represents an indexable Torch dataset
@@ -16,6 +16,7 @@ class SlicesDataset(Dataset):
         self.slices = []
 
         for i, d in enumerate(data):
+
             for j in range(d["image"].shape[0]):
                 self.slices.append((i, j))
 
@@ -30,6 +31,8 @@ class SlicesDataset(Dataset):
             Dictionary of 2 Torch Tensors of dimensions [1, W, H]
         """
         slc = self.slices[idx]
+        # print(slc)
+        # print(self.data[slc[0]]["image"])
         sample = dict()
         sample["id"] = idx
 
@@ -48,6 +51,9 @@ class SlicesDataset(Dataset):
         # Hint2: You can use None notation like so: arr[None, :] to add size-1 
         # dimension to a Numpy array
         # <YOUR CODE GOES HERE>
+
+        sample["image"] = torch.from_numpy(self.data[slc[0]]["image"][slc[1]]).unsqueeze(0)
+        sample["seg"] = torch.from_numpy(self.data[slc[0]]["seg"][slc[1]]).unsqueeze(0)
 
         return sample
 

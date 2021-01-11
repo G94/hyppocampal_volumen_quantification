@@ -4,6 +4,7 @@ the experiment lifecycle
 """
 import os
 import time
+import sys
 
 import numpy as np
 import torch
@@ -15,7 +16,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from data_prep.SlicesDataset import SlicesDataset
 from utils.utils import log_to_tensorboard
-from utils.volume_stats import Dice3d, Jaccard3d
+from utils.volume_stats import Dice3d, Jaccard3d, Sensivity
 from networks.RecursiveUNet import UNet
 from inference.UNetInferenceAgent import UNetInferenceAgent
 
@@ -97,8 +98,9 @@ class UNetExperiment:
             # shape [BATCH_SIZE, 1, PATCH_SIZE, PATCH_SIZE] into variables data and target. 
             # Feed data to the model and feed target to the loss function
             # 
-            # data = <YOUR CODE HERE>
-            # target = <YOUR CODE HERE>
+
+            data = batch['image'].to(self.device, dtype=torch.float)
+            target = batch['seg'].to(self.device)
 
             prediction = self.model(data)
 
@@ -110,7 +112,7 @@ class UNetExperiment:
 
             # TASK: What does each dimension of variable prediction represent?
             # ANSWER:
-
+            ## the first dimension is the batch size
             loss.backward()
             self.optimizer.step()
 
@@ -154,9 +156,13 @@ class UNetExperiment:
                 
                 # TASK: Write validation code that will compute loss on a validation sample
                 # <YOUR CODE HERE>
-
+                data = batch['image'].to(self.device, dtype=torch.float)
+                target = batch['seg'].to(self.device)
+                
+                prediction = self.model(data)
+                prediction_softmax = F.softmax(prediction, dim=1)
+                loss = self.loss_function(prediction, target[:,0,:,:])
                 print(f"Batch {i}. Data shape {data.shape} Loss {loss}")
-
                 # We report loss that is accumulated across all of validation set
                 loss_list.append(loss.item())
 
@@ -218,7 +224,7 @@ class UNetExperiment:
         out_dict["volume_stats"] = []
         dc_list = []
         jc_list = []
-
+        sstv_list = []
         # for every in test set
         for i, x in enumerate(self.test_data):
             pred_label = inference_agent.single_volume_inference(x["image"])
@@ -232,9 +238,11 @@ class UNetExperiment:
             # on Wikipedia. If you completed it
             # correctly (and if you picked your train/val/test split right ;)),
             # your average Jaccard on your test set should be around 0.80
-
+      
             dc = Dice3d(pred_label, x["seg"])
             jc = Jaccard3d(pred_label, x["seg"])
+            sstv = Sensivity(pred_label, x["seg"])
+            sstv_list.append(sstv)
             dc_list.append(dc)
             jc_list.append(jc)
 
@@ -247,11 +255,13 @@ class UNetExperiment:
             out_dict["volume_stats"].append({
                 "filename": x['filename'],
                 "dice": dc,
-                "jaccard": jc
+                "jaccard": jc,
+                "sensivity":sstv
                 })
             print(f"{x['filename']} Dice {dc:.4f}. {100*(i+1)/len(self.test_data):.2f}% complete")
 
         out_dict["overall"] = {
+            "mean_sensivity":np.mean(sstv_list),
             "mean_dice": np.mean(dc_list),
             "mean_jaccard": np.mean(jc_list)}
 

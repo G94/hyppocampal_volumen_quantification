@@ -43,13 +43,8 @@ def LoadHippocampusData(root_dir, y_shape, z_shape):
         image, _ = load(os.path.join(image_dir, f))
         label, _ = load(os.path.join(label_dir, f))
 
-        # print(label)
-        # plt.imshow(label[:,:,5])
-        # plt.savefig('label_before.png')
-
         # TASK: normalize all images (but not labels) so that values are in [0..1] range
         # <YOUR CODE GOES HERE>
-        # print(image.shape)
         for x in range(0, image.shape[2]):
             image[:,:,x] = image[:,:,x].astype(np.single)/np.max(image[:,:,x])
 
@@ -64,14 +59,9 @@ def LoadHippocampusData(root_dir, y_shape, z_shape):
         image = med_reshape(image, new_shape=(image.shape[0], y_shape, z_shape))
         label = med_reshape(label, new_shape=(label.shape[0], y_shape, z_shape)).astype(int)
 
-        # print(label)
-        # plt.imshow(label[:,:,5])
-        # plt.savefig('label.png')
-
-        # print(image)
-        # sys.exit(0)
         # TASK: Why do we need to cast label to int?
         # ANSWER: 
+        # Because Cross Entropy Loss would need the voxel labels to be integer 
 
         out.append({"image": image, "seg": label, "filename": f})
 
