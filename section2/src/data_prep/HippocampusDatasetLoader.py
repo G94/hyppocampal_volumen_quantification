@@ -61,7 +61,7 @@ def LoadHippocampusData(root_dir, y_shape, z_shape):
 
         # TASK: Why do we need to cast label to int?
         # ANSWER: 
-        # Because Cross Entropy Loss would need the voxel labels to be integer 
+        # Because in later calculations such as Dice Score we'll need our voxels labels to be 1 or 0 
 
         out.append({"image": image, "seg": label, "filename": f})
 

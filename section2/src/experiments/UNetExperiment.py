@@ -73,6 +73,8 @@ class UNetExperiment:
         # to a certain class
         self.loss_function = torch.nn.CrossEntropyLoss()
 
+
+
         # We are using standard SGD method to optimize our weights
         self.optimizer = optim.Adam(self.model.parameters(), lr=config.learning_rate)
         # Scheduler helps us update learning rate automatically

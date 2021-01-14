@@ -6,6 +6,7 @@ __pycache__/
 # C extensions
 *.so
 .vscode/
+section2/runs/
 # Distribution / packaging
 .Python
 data/
