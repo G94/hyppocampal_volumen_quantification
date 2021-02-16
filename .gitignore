@@ -6,7 +6,13 @@ __pycache__/
 # C extensions
 *.so
 .vscode/
+section1/data/
+section1/out/training_data/
 section2/runs/
+
+*.gz
+*.nii
+*.tar
 # Distribution / packaging
 .Python
 data/
