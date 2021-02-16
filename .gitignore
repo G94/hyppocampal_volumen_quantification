@@ -8,7 +8,7 @@ __pycache__/
 .vscode/
 section1/data/
 section1/out/training_data/
-section2/runs/
+
 
 *.gz
 *.nii
