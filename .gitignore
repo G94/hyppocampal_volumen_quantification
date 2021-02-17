@@ -9,7 +9,7 @@ __pycache__/
 section1/data/
 section1/out/training_data/
 
-
+*.pth
 *.gz
 *.nii
 *.tar
