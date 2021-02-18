@@ -25,14 +25,11 @@ def Dice3d(a, b):
     # TASK: Write implementation of Dice3D. If you completed exercises in the lessons
     # you should already have it.
     # <YOUR CODE HERE>
-    intersection =  np.sum(a*b)
-    volumes = np.sum(a) + np.sum(b)
-
+    intersection = np.logical_and(a, b).sum()
+    volumes = np.sum(a>0) + np.sum(b>0)
     if volumes == 0:
         return -1
-
-    dice3d_score = 2.*float(intersection)/float(volumes)
-    return dice3d_score
+    return 2.*float(intersection) / float(volumes)
     
 
 def Jaccard3d(a, b):

@@ -203,7 +203,7 @@ class UNetExperiment:
         else:
             raise Exception(f"Could not find path {model_path}")
 
-    def run_test(self):
+    def run_test(self, return_pred_labels = False):
         """
         This runs test cycle on the test dataset.
         Note that process and evaluations are quite different
@@ -212,7 +212,7 @@ class UNetExperiment:
         """
         print("Testing...")
         self.model.eval()
-
+        preds_list = []
         # In this method we will be computing metrics that are relevant to the task of 3D volume
         # segmentation. Therefore, unlike train and validation methods, we will do inferences
         # on full 3D volumes, much like we will be doing it when we deploy the model in the 
@@ -240,7 +240,7 @@ class UNetExperiment:
             # on Wikipedia. If you completed it
             # correctly (and if you picked your train/val/test split right ;)),
             # your average Jaccard on your test set should be around 0.80
-      
+            preds_list.append([pred_label, x["seg"], x['filename']])
             dc = Dice3d(pred_label, x["seg"])
             jc = Jaccard3d(pred_label, x["seg"])
             sstv = Sensivity(pred_label, x["seg"])
@@ -268,7 +268,10 @@ class UNetExperiment:
             "mean_jaccard": np.mean(jc_list)}
 
         print("\nTesting complete.")
-        return out_dict
+        if return_pred_labels:
+            return out_dict, preds_list
+        else:
+            return out_dict
 
     def run(self):
         """

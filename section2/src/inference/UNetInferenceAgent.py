@@ -47,7 +47,7 @@ class UNetInferenceAgent:
         # correct by running it on one of the volumes in your training set and comparing 
         # with the label in 3D Slicer.
         patch_size = 64
-        volume =  med_reshape(volume, new_shape = [volume.shape[0],  patch_size, patch_size])
+        volume =  med_reshape(volume, new_shape = [self.patch_size,  self.patch_size, self.patch_size])
 
         def inference(img):
             tsr_test =  torch.from_numpy(img.astype(np.single)/np.max(img)).unsqueeze(0).unsqueeze(0)
